@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
+	"github.com/shuishiyuanzhong/graphql-items/pkg/item"
 	"net/http"
 )
 
@@ -98,7 +99,13 @@ func productResolver(p graphql.ResolveParams) (interface{}, error) {
 
 func main() {
 	// 定义Schema
-	schema := createSchema()
+	//schema := createSchema()
+
+	schema, err := item.InitGraphQL()
+	if err != nil {
+		panic(err)
+	}
+
 	// 设置HTTP服务器
 	httpHandler := handler.New(&handler.Config{
 		Schema: &schema,
