@@ -32,10 +32,3 @@ func (h *ItemHub) BuildSchema() (graphql.Schema, error) {
 }
 
 var Hub *ItemHub
-
-func InitGraphQL() (graphql.Schema, error) {
-	Hub = new(ItemHub)
-	Hub.Register(new(ItemDemo))
-
-	return Hub.BuildSchema()
-}

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
+	"github.com/shuishiyuanzhong/graphql-items/app"
 	"github.com/shuishiyuanzhong/graphql-items/pkg/item"
 	"net/http"
 )
@@ -97,11 +98,18 @@ func productResolver(p graphql.ResolveParams) (interface{}, error) {
 	return Product{ID: "1", Name: "Example Product", Price: 99.99}, nil
 }
 
+func InitGraphQL() (graphql.Schema, error) {
+	item.Hub = new(item.ItemHub)
+	item.Hub.Register(new(app.UserDelegate))
+
+	return item.Hub.BuildSchema()
+}
+
 func main() {
 	// 定义Schema
 	//schema := createSchema()
 
-	schema, err := item.InitGraphQL()
+	schema, err := InitGraphQL()
 	if err != nil {
 		panic(err)
 	}
