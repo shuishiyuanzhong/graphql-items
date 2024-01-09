@@ -100,7 +100,7 @@ func productResolver(p graphql.ResolveParams) (interface{}, error) {
 
 func InitGraphQL() (graphql.Schema, error) {
 	item.Hub = new(item.ItemHub)
-	item.Hub.Register(new(app.UserDelegate))
+	item.Hub.Register(app.NewUserDelegate())
 
 	return item.Hub.BuildSchema()
 }

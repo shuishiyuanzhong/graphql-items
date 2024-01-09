@@ -6,7 +6,34 @@ import (
 )
 
 type UserDelegate struct {
-	*item.DefaultDelegate
+	item.SqlHelper
+}
+
+func NewUserDelegate() (d *UserDelegate) {
+	d = &UserDelegate{}
+	d.SqlHelper = item.NewDefaultSqlHelper("user", d.initItemTable())
+	return
+}
+
+func (d *UserDelegate) initItemTable() []*item.Column {
+	columns := make([]*item.Column, 0)
+	columns = append(columns, &item.Column{
+		Type:  "",
+		Name:  "id",
+		Alias: "id",
+	})
+	columns = append(columns, &item.Column{
+		Type:  "",
+		Name:  "name",
+		Alias: "name",
+	})
+	columns = append(columns, &item.Column{
+		Type:  "",
+		Name:  "email",
+		Alias: "email",
+	})
+
+	return columns
 }
 
 func (d *UserDelegate) Name() string {
@@ -42,10 +69,4 @@ func (d *UserDelegate) BuildField() graphql.Fields {
 		},
 	}
 	return fields
-}
-
-type Product struct {
-	ID    string  `json:"id"`
-	Name  string  `json:"name"`
-	Price float64 `json:"price"`
 }
