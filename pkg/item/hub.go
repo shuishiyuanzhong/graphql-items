@@ -18,6 +18,8 @@ func (h *ItemHub) BuildSchema() (graphql.Schema, error) {
 			Resolve: delegate.Resolve(),
 		}
 	}
+
+	// 生成schema(逻辑不变)
 	queryType := graphql.NewObject(
 		graphql.ObjectConfig{
 			Name:   "Query",
