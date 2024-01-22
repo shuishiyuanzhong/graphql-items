@@ -1,7 +1,6 @@
 package item
 
 import (
-	"fmt"
 	"github.com/graphql-go/graphql"
 )
 
@@ -9,14 +8,16 @@ type Field struct {
 	fieldName string
 	fieldType FieldType
 
+	asList bool
+
 	resolver graphql.FieldResolveFn
 }
 
-func (f *Field) Convert() (*graphql.Field, error) {
+func (f *Field) Convert(hub *ItemHub) (*graphql.Field, error) {
 	// TODO 从Hub中加载FieldType，然后它们返回的type可能就是graphql框架原有的类型以及用户自己声明的item类型
-	t, ok := FieldTypeMapping[f.fieldType]
-	if !ok {
-		return nil, fmt.Errorf("unsupported field type: %s", f.fieldType)
+	t, err := hub.loadFieldType(f.fieldType)
+	if err != nil {
+		return nil, err
 	}
 
 	return &graphql.Field{
