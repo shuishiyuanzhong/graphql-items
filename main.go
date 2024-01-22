@@ -13,6 +13,7 @@ import (
 func InitGraphQL() (*graphql.Schema, error) {
 	item.Hub = new(item.ItemHub)
 	item.Hub.Register(app.NewUserDelegate())
+	item.Hub.Register(app.NewDepartmentDelegate())
 
 	return item.Hub.BuildSchema()
 }
