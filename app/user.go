@@ -5,6 +5,10 @@ import (
 	"github.com/shuishiyuanzhong/graphql-items/pkg/item"
 )
 
+const (
+	FieldTypeUser = "user"
+)
+
 type UserDelegate struct {
 	item.SqlHelper
 }
@@ -40,12 +44,19 @@ func (d *UserDelegate) Name() string {
 	return "users"
 }
 
-func (d *UserDelegate) BuildItem() *graphql.List {
+func (d *UserDelegate) Type() item.FieldType {
+	return FieldTypeUser
+}
+
+func (d *UserDelegate) IsList() bool {
+	return true
+}
+
+func (d *UserDelegate) BuildItem(fields graphql.Fields) *graphql.List {
 	return graphql.NewList(graphql.NewObject(
 		graphql.ObjectConfig{
-
 			Name:   d.Name(),
-			Fields: d.BuildField(),
+			Fields: fields,
 		},
 	))
 }
@@ -83,5 +94,23 @@ func (d *UserDelegate) BuildField() graphql.Fields {
 	输出的东西应该是一个抽象的对象，由ItemHub来负责将这些抽象的对象转换成graphql.Field。
 	*/
 
+	return fields
+}
+
+func (d *UserDelegate) BuildField2() []*item.Field {
+	fields := make([]*item.Field, 0)
+
+	fields = append(fields,
+		item.NewItemField("id", item.FieldTypeString),
+	)
+	fields = append(fields,
+		item.NewItemField("name", item.FieldTypeString),
+	)
+	fields = append(fields,
+		item.NewItemField("price", item.FieldTypeFloat),
+	)
+	fields = append(fields,
+		item.NewItemField("test", item.FieldTypeString),
+	)
 	return fields
 }

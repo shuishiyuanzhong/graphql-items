@@ -57,6 +57,6 @@ type ColumnType string
 
 const (
 	Int    ColumnType = "Int"
-	Float             = "Float"
-	String            = "String"
+	Float  ColumnType = "Float"
+	String ColumnType = "String"
 )

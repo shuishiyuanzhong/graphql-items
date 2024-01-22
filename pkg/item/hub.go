@@ -1,6 +1,8 @@
 package item
 
-import "github.com/graphql-go/graphql"
+import (
+	"github.com/graphql-go/graphql"
+)
 
 type ItemHub struct {
 	delegates []Delegate
@@ -10,13 +12,15 @@ func (h *ItemHub) Register(delegate Delegate) {
 	h.delegates = append(h.delegates, delegate)
 }
 
-func (h *ItemHub) BuildSchema() (graphql.Schema, error) {
+func (h *ItemHub) BuildSchema() (*graphql.Schema, error) {
 	fields := make(graphql.Fields)
 	for _, delegate := range h.delegates {
-		fields[delegate.Name()] = &graphql.Field{
-			Type:    delegate.BuildItem(),
-			Resolve: delegate.Resolve(),
+		item, err := h.buildItem(delegate)
+		if err != nil {
+			return nil, err
 		}
+
+		fields[delegate.Name()] = item
 	}
 
 	// 生成schema(逻辑不变)
@@ -27,10 +31,54 @@ func (h *ItemHub) BuildSchema() (graphql.Schema, error) {
 		},
 	)
 
-	return graphql.NewSchema(
+	schema, err := graphql.NewSchema(
 		graphql.SchemaConfig{
 			Query: queryType,
-		})
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &schema, nil
+}
+
+// 一个field依赖其他delegate对象，就发生在这里
+func (h *ItemHub) initItemField(delegate Delegate) (graphql.Fields, error) {
+	rawFields := delegate.BuildField2()
+	fields := make(graphql.Fields)
+	for _, f := range rawFields {
+		convert, err := f.Convert()
+		if err != nil {
+			return nil, err
+		}
+		fields[f.fieldName] = convert
+	}
+	return fields, nil
+}
+
+// 这个方法最终应该输出一个能够被Hub直接使用的field字段
+func (h *ItemHub) buildItem(delegate Delegate) (*graphql.Field, error) {
+	fields, err := h.initItemField(delegate)
+	if err != nil {
+		return nil, err
+	}
+
+	obj := graphql.NewObject(graphql.ObjectConfig{
+		Name:   delegate.Name(),
+		Fields: fields,
+	})
+
+	var result graphql.Output
+	result = obj
+	if delegate.IsList() {
+		result = graphql.NewList(obj)
+	}
+
+	return &graphql.Field{
+		Type:    result,
+		Resolve: delegate.Resolve(),
+	}, nil
 }
 
 var Hub *ItemHub

@@ -10,7 +10,7 @@ import (
 	"github.com/shuishiyuanzhong/graphql-items/pkg/item"
 )
 
-func InitGraphQL() (graphql.Schema, error) {
+func InitGraphQL() (*graphql.Schema, error) {
 	item.Hub = new(item.ItemHub)
 	item.Hub.Register(app.NewUserDelegate())
 
@@ -28,7 +28,7 @@ func main() {
 
 	// 设置HTTP服务器
 	httpHandler := handler.New(&handler.Config{
-		Schema: &schema,
+		Schema: schema,
 		Pretty: true,
 	})
 	http.Handle("/graphql", httpHandler)
