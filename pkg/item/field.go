@@ -14,7 +14,6 @@ type Field struct {
 }
 
 func (f *Field) Convert(hub *ItemHub) (*graphql.Field, error) {
-	// TODO 从Hub中加载FieldType，然后它们返回的type可能就是graphql框架原有的类型以及用户自己声明的item类型
 	t, err := hub.loadFieldType(f.fieldType)
 	if err != nil {
 		return nil, err
