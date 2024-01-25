@@ -21,6 +21,8 @@ func (h *ItemHub) Register(delegate Delegate) {
 
 func (h *ItemHub) BuildSchema() (*graphql.Schema, error) {
 
+	h.preLoadDelegate()
+
 	fields := make(graphql.Fields)
 	for _, delegate := range h.delegates {
 		item, err := h.buildItem(delegate)
