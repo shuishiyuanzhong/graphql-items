@@ -1,19 +1,17 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
-
-	"github.com/shuishiyuanzhong/graphql-items/app"
+	"github.com/shuishiyuanzhong/graphql-items/example/user-department/model"
 	"github.com/shuishiyuanzhong/graphql-items/pkg/item"
+	"net/http"
 )
 
 func InitGraphQL() (*graphql.Schema, error) {
 	item.Hub = new(item.ItemHub)
-	item.Hub.Register(app.NewUserDelegate())
-	item.Hub.Register(app.NewDepartmentDelegate())
+	item.Hub.Register(model.NewUserDelegate())
+	item.Hub.Register(model.NewDepartmentDelegate())
 
 	return item.Hub.BuildSchema()
 }
