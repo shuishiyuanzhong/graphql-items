@@ -15,7 +15,7 @@ type UserDelegate struct {
 
 func NewUserDelegate() (d *UserDelegate) {
 	d = &UserDelegate{}
-	d.SqlHelper = item.NewDefaultSqlHelper("user", d.initItemTable())
+	d.SqlHelper = item.NewDefaultSqlHelper(d.Name(), d.initItemTable())
 	return
 }
 
