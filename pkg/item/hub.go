@@ -1,11 +1,29 @@
 package item
 
 import (
+	"database/sql"
 	"github.com/graphql-go/graphql"
 )
 
 type ItemHub struct {
 	delegates []Delegate
+
+	db *sql.DB
+}
+
+func H() *ItemHub {
+	if Hub == nil {
+		Hub = new(ItemHub)
+	}
+	return Hub
+}
+
+func (h *ItemHub) GetDBConn() *sql.DB {
+	return h.db
+}
+
+func (h *ItemHub) SetDBConn(db *sql.DB) {
+	h.db = db
 }
 
 func (h *ItemHub) Register(delegate Delegate) {

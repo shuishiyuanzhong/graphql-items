@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/shuishiyuanzhong/graphql-items/conf"
 	"net/http"
 
 	"github.com/graphql-go/graphql"
@@ -11,10 +12,9 @@ import (
 )
 
 func InitGraphQL() (*graphql.Schema, error) {
-	item.Hub = new(item.ItemHub)
-	item.Hub.Register(app.NewUserDelegate())
-
-	return item.Hub.BuildSchema()
+	item.H().Register(app.NewUserDelegate())
+	item.H().SetDBConn(conf.C().Mysql.GetDB())
+	return item.H().BuildSchema()
 }
 
 func main() {
