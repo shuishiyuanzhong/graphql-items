@@ -2,10 +2,8 @@ package item
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"github.com/graphql-go/graphql"
-	"github.com/shuishiyuanzhong/graphql-items/conf"
 )
 
 type SqlHelper interface {
@@ -17,8 +15,6 @@ type DefaultSqlHelper struct {
 	tableColumns   []*Column
 	columnsByAlias map[string]*Column
 	columnsByName  map[string]*Column
-
-	db *sql.DB
 }
 
 func NewDefaultSqlHelper(tableName string, columns []*Column) *DefaultSqlHelper {
@@ -35,7 +31,6 @@ func NewDefaultSqlHelper(tableName string, columns []*Column) *DefaultSqlHelper 
 		d.columnsByName[column.Name] = column
 	}
 
-	d.db = conf.C().Mysql.GetDB()
 	return d
 }
 
@@ -47,7 +42,7 @@ func (d *DefaultSqlHelper) Resolve() graphql.FieldResolveFn {
 
 		// TODO query from db
 
-		rows, err := d.db.QueryContext(context.Background(), sql)
+		rows, err := Hub.DB.QueryContext(context.Background(), sql)
 		if err != nil {
 			return nil, err
 		}

@@ -1,11 +1,29 @@
 package item
 
 import (
+	"database/sql"
 	"github.com/graphql-go/graphql"
+	"github.com/shuishiyuanzhong/graphql-items/app"
+	"github.com/shuishiyuanzhong/graphql-items/conf"
+)
+
+var (
+	Hub *ItemHub
 )
 
 type ItemHub struct {
 	delegates []Delegate
+
+	DB *sql.DB
+}
+
+func InitGraphQL() (*graphql.Schema, error) {
+	Hub = new(ItemHub)
+	Hub.DB = conf.C().Mysql.GetDB()
+
+	Hub.Register(app.NewUserDelegate())
+
+	return Hub.BuildSchema()
 }
 
 func (h *ItemHub) Register(delegate Delegate) {
@@ -80,5 +98,3 @@ func (h *ItemHub) buildItem(delegate Delegate) (*graphql.Field, error) {
 		Resolve: delegate.Resolve(),
 	}, nil
 }
-
-var Hub *ItemHub

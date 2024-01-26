@@ -3,25 +3,16 @@ package main
 import (
 	"net/http"
 
-	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 
-	"github.com/shuishiyuanzhong/graphql-items/app"
 	"github.com/shuishiyuanzhong/graphql-items/pkg/item"
 )
-
-func InitGraphQL() (*graphql.Schema, error) {
-	item.Hub = new(item.ItemHub)
-	item.Hub.Register(app.NewUserDelegate())
-
-	return item.Hub.BuildSchema()
-}
 
 func main() {
 	// 定义Schema
 	//schema := createSchema()
 
-	schema, err := InitGraphQL()
+	schema, err := item.InitGraphQL()
 	if err != nil {
 		panic(err)
 	}
