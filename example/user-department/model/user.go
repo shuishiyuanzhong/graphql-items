@@ -74,6 +74,8 @@ func (d *UserDelegate) BuildField() []*item.Field {
 func (d *UserDelegate) departmentField() *item.Field {
 	field := item.NewItemField("department", FieldTypeDepartment)
 	field.SetResolver(func(p graphql.ResolveParams) (interface{}, error) {
+		// TODO 可以考虑封装一个Thunk，这个resolver只拿主键，然后外层的方法再去查具体数据
+		// github.com/graphql-go/graphql@v0.8.1/executor.go:754
 		return []map[string]interface{}{{"id": "1", "name": "Example Product", "price": 99.99}}, nil
 	})
 	return field
