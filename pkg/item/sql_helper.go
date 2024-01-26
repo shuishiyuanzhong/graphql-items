@@ -2,6 +2,7 @@ package item
 
 import (
 	"fmt"
+
 	"github.com/graphql-go/graphql"
 )
 
@@ -41,7 +42,10 @@ func (d *DefaultSqlHelper) Resolve() graphql.FieldResolveFn {
 
 		// TODO query from db
 
-		return []map[string]interface{}{{"id": "1", "name": "Example Product", "price": 99.99}}, nil
+		return []map[string]interface{}{
+			{"id": "1", "name": "Example Product", "price": 99.99},
+			{"id": "2", "name": "Example Product2", "price": 99.99},
+		}, nil
 	}
 }
 
