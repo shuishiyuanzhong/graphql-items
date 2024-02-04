@@ -43,7 +43,7 @@ func (d *DefaultSqlHelper) Resolve() graphql.FieldResolveFn {
 
 		// TODO query from db
 
-		rows, err := Hub.DB.QueryContext(context.Background(), sql)
+		rows, err := HUB().GetDB().QueryContext(context.Background(), sql)
 		if err != nil {
 			return nil, err
 		}

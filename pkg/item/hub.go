@@ -6,6 +6,7 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+// TODO  HubSet 框架支持多个数据源
 type ItemHub struct {
 	delegates []Delegate
 
@@ -18,18 +19,18 @@ type ItemHub struct {
 	db *sql.DB
 }
 
-func H() *ItemHub {
-	if Hub == nil {
-		Hub = new(ItemHub)
+func HUB() *ItemHub {
+	if hub == nil {
+		hub = new(ItemHub)
 	}
-	return Hub
+	return hub
 }
 
-func (h *ItemHub) GetDBConn() *sql.DB {
+func (h *ItemHub) GetDB() *sql.DB {
 	return h.db
 }
 
-func (h *ItemHub) SetDBConn(db *sql.DB) {
+func (h *ItemHub) SetDB(db *sql.DB) {
 	h.db = db
 }
 
@@ -158,7 +159,7 @@ func (h *ItemHub) loadFieldType(flag FieldType) (graphql.Output, error) {
 	return nil, fmt.Errorf("unsupported field type: %s", flag)
 }
 
-var Hub *ItemHub
+var hub *ItemHub
 
 var defaultFieldTypeMapping = map[FieldType]graphql.Output{
 	FieldTypeString:  graphql.String,
