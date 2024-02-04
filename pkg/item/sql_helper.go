@@ -41,8 +41,6 @@ func (d *DefaultSqlHelper) Resolve() graphql.FieldResolveFn {
 		sql := "SELECT * from %s"
 		sql = fmt.Sprintf(sql, d.tableName)
 
-		// TODO query from db
-
 		rows, err := HUB().GetDB().QueryContext(context.Background(), sql)
 		if err != nil {
 			return nil, err
@@ -50,15 +48,25 @@ func (d *DefaultSqlHelper) Resolve() graphql.FieldResolveFn {
 
 		defer rows.Close()
 
-		data := make([]map[string]interface{}, 0)
-		for rows.Next() {
-			ins := make(map[string]interface{})
+		columns, _ := rows.Columns()
 
-			rows.Scan(&ins)
-
-			data = append(data, ins)
+		cache := make([]interface{}, len(columns)) //临时存储每行数据
+		for index, _ := range cache {              //为每一列初始化一个指针
+			var a interface{}
+			cache[index] = &a
 		}
-		return data, nil
+		var list []map[string]interface{} //返回的切片
+		for rows.Next() {
+			_ = rows.Scan(cache...)
+
+			item := make(map[string]interface{})
+			for i, data := range cache {
+				item[columns[i]] = *data.(*interface{}) //取实际类型
+			}
+			list = append(list, item)
+		}
+
+		return list, nil
 		//return []map[string]interface{}{{"id": "1", "name": "Example Product", "price": 99.99}}, nil
 	}
 }
