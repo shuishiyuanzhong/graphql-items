@@ -2,9 +2,11 @@ package item
 
 import (
 	"context"
+	"errors"
 	"fmt"
-
 	"github.com/graphql-go/graphql"
+	"github.com/graphql-go/graphql/language/ast"
+	"strings"
 )
 
 type SqlHelper interface {
@@ -37,9 +39,29 @@ func NewDefaultSqlHelper(tableName string, columns []*Column) *DefaultSqlHelper 
 
 func (d *DefaultSqlHelper) Resolve() graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		// TODO * 应该替换成具体的列表
-		sql := "SELECT * from %s"
-		sql = fmt.Sprintf(sql, d.tableName)
+
+		customFields := make([]*ast.Field, 0)
+		for _, field := range p.Info.FieldASTs {
+			if field.Name.Value == d.tableName {
+				selections := field.SelectionSet.Selections
+				for _, selection := range selections {
+					customFields = append(customFields, selection.(*ast.Field))
+				}
+				break
+			}
+		}
+
+		if len(customFields) < 0 {
+			return nil, errors.New("no custom fields to query")
+		}
+
+		var customCollect []string
+		for _, field := range customFields {
+			customCollect = append(customCollect, field.Name.Value)
+		}
+
+		sql := "SELECT %s from %s"
+		sql = fmt.Sprintf(sql, strings.Join(customCollect, ","), d.tableName)
 
 		rows, err := HUB().GetDB().QueryContext(context.Background(), sql)
 		if err != nil {
