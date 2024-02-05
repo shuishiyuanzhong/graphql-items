@@ -1,10 +1,12 @@
 package item
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/graphql-go/graphql"
 )
 
+// TODO  HubSet 框架支持多个数据源
 type ItemHub struct {
 	delegates []Delegate
 
@@ -13,6 +15,23 @@ type ItemHub struct {
 	// 那么就会导致找不到对应的类型，从而导致field创建失败.
 	// 在最终处理delegate即item的时候，也应该从缓存中加载相应的指针出来进行最终的构建.
 	preCache map[FieldType]graphql.Output
+
+	db *sql.DB
+}
+
+func HUB() *ItemHub {
+	if hub == nil {
+		hub = new(ItemHub)
+	}
+	return hub
+}
+
+func (h *ItemHub) GetDB() *sql.DB {
+	return h.db
+}
+
+func (h *ItemHub) SetDB(db *sql.DB) {
+	h.db = db
 }
 
 func (h *ItemHub) Register(delegate Delegate) {
@@ -20,6 +39,8 @@ func (h *ItemHub) Register(delegate Delegate) {
 }
 
 func (h *ItemHub) BuildSchema() (*graphql.Schema, error) {
+
+	h.preLoadDelegate()
 
 	fields := make(graphql.Fields)
 	for _, delegate := range h.delegates {
@@ -138,7 +159,7 @@ func (h *ItemHub) loadFieldType(flag FieldType) (graphql.Output, error) {
 	return nil, fmt.Errorf("unsupported field type: %s", flag)
 }
 
-var Hub *ItemHub
+var hub *ItemHub
 
 var defaultFieldTypeMapping = map[FieldType]graphql.Output{
 	FieldTypeString:  graphql.String,
